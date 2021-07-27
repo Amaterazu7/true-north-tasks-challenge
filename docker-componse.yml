@@ -1,0 +1,48 @@
+version: '3.7'
+
+services:
+  nest-tasks-manager-api:
+    container_name: tasks-manager-api
+    build: ./tasks-manager-api
+    command: "npm start"
+    volumes:
+      - ./tasks-manager-api:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 3110:3000
+    networks:
+      - tasks-network
+
+  react-tasks-manager-ui:
+    container_name: tasks-manager-ui
+    build: ./tasks-manager-ui
+    command: "npm run start"
+    volumes:
+      - ./tasks-manager-ui:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 4200:3000
+
+  mongodb:
+    image: mongo:latest
+    container_name: tasks-mongo-manager
+    environment:
+      MONGO_INITDB_DATABASE: tasks_manager
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    ports:
+      - 27110:27017
+    volumes:
+      - tasks_manager:/data/db
+    networks:
+      - tasks-network
+
+networks:
+  tasks-network:
+    name: tasks-network
+    driver: "bridge"
+volumes:
+  tasks_manager:
+  node_modules:
+  data:
+    driver: "local"
